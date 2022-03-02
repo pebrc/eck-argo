@@ -1,0 +1,87 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elastic-istio
+spec:
+  version: 8.0.0
+  monitoring:
+    logs:
+      elasticsearchRefs:
+      - name: eck-monitoring
+  http:
+    tls: 
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+  - name: mixed
+    count: 3
+    config:
+      node.store.allow_mmap: false
+    volumeClaimTemplates:
+    - metadata: 
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 15Gi
+    podTemplate:
+      metadata:
+        labels:
+          app: prod-es
+          version: 8.0.0
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: 1
+        automountServiceAccountToken: true 
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: eck-monitoring
+spec:
+  version: 8.0.0
+  http:
+    tls: 
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+  - name: default
+    count: 3
+    config:
+      node.store.allow_mmap: false
+    volumeClaimTemplates:
+    - metadata: 
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 15Gi
+    podTemplate:
+      metadata:
+        labels:
+          app: monitor-es
+          version: 8.0.0
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: 1
+        automountServiceAccountToken: true 
