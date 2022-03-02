@@ -14,7 +14,7 @@ spec:
         disabled: true
   nodeSets:
   - name: mixed
-    count: 3
+    count: 4
     config:
       node.store.allow_mmap: false
     volumeClaimTemplates:
