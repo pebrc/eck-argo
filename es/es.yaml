@@ -4,6 +4,8 @@ metadata:
   name: elastic-istio
 spec:
   version: 8.0.0
+  secureSettings:
+  - secretName: gcs-creds
   monitoring:
     logs:
       elasticsearchRefs:
