@@ -78,7 +78,7 @@ spec:
         labels:
           app: monitor-es
           version: 8.0.0
-          push-update: 1
+          push-update: "1"
         annotations:
           traffic.sidecar.istio.io/includeInboundPorts: "*"
           traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
